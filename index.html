@@ -3,183 +3,53 @@
 
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Page</title>
+
+    <title>Clickjacking Detection System</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
         body {
-            background: #f2f2f2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .registration-container {
-            background: white;
-            width: 400px;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f4;
         }
 
         h1 {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        input:focus,
-        select:focus {
-            outline: none;
-            border-color: #333;
-        }
-
-        .gender {
-            display: flex;
-            gap: 20px;
-        }
-
-        .gender label {
-            font-weight: normal;
-        }
-
-        .gender input {
-            width: auto;
-            margin-right: 5px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #333;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background: #555;
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .login-link a {
             color: #333;
-            text-decoration: none;
-            font-weight: bold;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .status {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            background-color: #e8f5e9;
+            color: green;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="registration-container">
+    <div class="container">
 
-        <h1>Create Account</h1>
+        <h1>Clickjacking Detection System</h1>
 
-        <form>
+        <p>
+            This project is used to demonstrate basic
+            clickjacking attack detection.
+        </p>
 
-            <div class="form-group">
-                <label for="fullname">Full Name</label>
-                <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
-            </div>
-
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required>
-            </div>
-
-            <div class="form-group">
-                <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
-            </div>
-
-            <div class="form-group">
-                <label>Gender</label>
-
-                <div class="gender">
-                    <label>
-                        <input type="radio" name="gender" value="male">
-                        Male
-                    </label>
-
-                    <label>
-                        <input type="radio" name="gender" value="female">
-                        Female
-                    </label>
-
-                    <label>
-                        <input type="radio" name="gender" value="other">
-                        Other
-                    </label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="country">Country</label>
-
-                <select id="country" name="country" required>
-                    <option value="">Select Country</option>
-                    <option value="india">India</option>
-                    <option value="usa">USA</option>
-                    <option value="uk">United Kingdom</option>
-                    <option value="canada">Canada</option>
-                    <option value="australia">Australia</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-            </div>
-
-            <div class="form-group">
-                <label for="confirm-password">Confirm Password</label>
-
-                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password"
-                    required>
-            </div>
-
-            <button type="submit">Register</button>
-
-        </form>
-
-        <div class="login-link">
-            Already have an account?
-            <a href="#">Login</a>
+        <div class="status">
+            <strong>Status:</strong> Website Secure
         </div>
 
     </div>

@@ -57,5 +57,15 @@ pipeline {
                 bat 'docker ps'
             }
         }
+        stage('Check Docker') {
+    steps {
+        bat '''
+            echo Checking Docker...
+            where docker
+            docker --version
+            docker info
+        '''
+    }
+}
     }
 }

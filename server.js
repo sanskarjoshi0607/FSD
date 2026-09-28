@@ -6,20 +6,29 @@ const PORT = 3000;
 
 const server = http.createServer((req, res) => {
 
+    console.log("Request:", req.method, req.url);
+
+    // Registration HTML
     if (req.url === "/" && req.method === "GET") {
 
         const filePath = path.join(__dirname, "registration.html");
 
+        console.log("Loading:", filePath);
+
         fs.readFile(filePath, (err, data) => {
 
             if (err) {
+                console.log("HTML ERROR:", err);
+
                 res.writeHead(500, {
                     "Content-Type": "text/plain"
                 });
 
-                res.end("Error loading registration page");
+                res.end("Error loading registration.html: " + err.message);
                 return;
             }
+
+            console.log("registration.html loaded successfully");
 
             res.writeHead(200, {
                 "Content-Type": "text/html"
@@ -31,6 +40,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // CSS
     if (req.url === "/style.css" && req.method === "GET") {
 
         const filePath = path.join(__dirname, "style.css");
@@ -38,7 +48,12 @@ const server = http.createServer((req, res) => {
         fs.readFile(filePath, (err, data) => {
 
             if (err) {
-                res.writeHead(404);
+                console.log("CSS ERROR:", err);
+
+                res.writeHead(404, {
+                    "Content-Type": "text/plain"
+                });
+
                 res.end("CSS file not found");
                 return;
             }
@@ -53,6 +68,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // JavaScript
     if (req.url === "/registration.js" && req.method === "GET") {
 
         const filePath = path.join(__dirname, "registration.js");
@@ -60,7 +76,12 @@ const server = http.createServer((req, res) => {
         fs.readFile(filePath, (err, data) => {
 
             if (err) {
-                res.writeHead(404);
+                console.log("JS ERROR:", err);
+
+                res.writeHead(404, {
+                    "Content-Type": "text/plain"
+                });
+
                 res.end("JavaScript file not found");
                 return;
             }
@@ -75,6 +96,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // Users JSON
     if (req.url === "/users" && req.method === "GET") {
 
         const filePath = path.join(__dirname, "users.json");
@@ -82,6 +104,8 @@ const server = http.createServer((req, res) => {
         fs.readFile(filePath, "utf8", (err, data) => {
 
             if (err) {
+                console.log("JSON ERROR:", err);
+
                 res.writeHead(500, {
                     "Content-Type": "application/json"
                 });
@@ -104,6 +128,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // Page not found
     res.writeHead(404, {
         "Content-Type": "text/plain"
     });
@@ -111,12 +136,9 @@ const server = http.createServer((req, res) => {
     res.end("404 - Page not found");
 });
 
-
 server.listen(PORT, () => {
-
     console.log("----------------------------------------");
     console.log("Registration server started!");
     console.log(`Open: http://localhost:${PORT}`);
     console.log("----------------------------------------");
-
 });

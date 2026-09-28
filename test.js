@@ -1,178 +1,430 @@
+const http = require("http");
 const fs = require("fs");
-const assert = require("assert");
+const path = require("path");
+const { spawn } = require("child_process");
 
-console.log("=================================");
-console.log("       RUNNING 10 TEST CASES");
-console.log("=================================\n");
+
+const PORT = 3000;
+
+let serverProcess;
 
 let passed = 0;
 let failed = 0;
 
-// Function to run each test
-function test(number, description, testFunction) {
-    try {
-        testFunction();
 
-        console.log(`✅ Test ${number}: PASS - ${description}`);
+function printLine() {
+    console.log("========================================");
+}
+
+
+function testResult(testName, condition) {
+
+    if (condition) {
+
+        console.log(`${testName}: PASS`);
+
         passed++;
 
-    } catch (error) {
+    } else {
 
-        console.log(`❌ Test ${number}: FAIL - ${description}`);
-        console.log(`   Reason: ${error.message}`);
+        console.log(`${testName}: FAIL`);
+
         failed++;
     }
 }
 
-// ---------------------------------
-// Read project files
-// ---------------------------------
 
-let html = "";
-let readme = "";
+function request(options, data = null) {
 
-if (fs.existsSync("index.html")) {
-    html = fs.readFileSync("index.html", "utf8");
+    return new Promise((resolve, reject) => {
+
+        const request = http.request(
+            options,
+            response => {
+
+                let body = "";
+
+                response.on("data", chunk => {
+                    body += chunk;
+                });
+
+                response.on("end", () => {
+
+                    resolve({
+                        statusCode: response.statusCode,
+                        body: body
+                    });
+
+                });
+
+            }
+        );
+
+
+        request.on("error", reject);
+
+
+        if (data) {
+            request.write(data);
+        }
+
+
+        request.end();
+
+    });
 }
 
-if (fs.existsSync("Readme.md")) {
-    readme = fs.readFileSync("Readme.md", "utf8");
+
+function startServer() {
+
+    return new Promise((resolve, reject) => {
+
+        serverProcess = spawn(
+            process.execPath,
+            ["server.js"],
+            {
+                cwd: __dirname,
+                stdio: ["ignore", "pipe", "pipe"]
+            }
+        );
+
+
+        serverProcess.stdout.on("data", data => {
+
+            console.log(
+                `Server: ${data.toString().trim()}`
+            );
+
+        });
+
+
+        serverProcess.stderr.on("data", data => {
+
+            console.error(
+                `Server Error: ${data.toString().trim()}`
+            );
+
+        });
+
+
+        setTimeout(() => {
+
+            resolve();
+
+        }, 1500);
+
+    });
+
 }
 
-// ---------------------------------
-// TEST CASE 1
-// ---------------------------------
 
-test(1, "index.html file exists", () => {
-    assert(
-        fs.existsSync("index.html"),
-        "index.html does not exist"
-    );
-});
+function stopServer() {
 
-// ---------------------------------
-// TEST CASE 2
-// ---------------------------------
+    if (serverProcess) {
 
-test(2, "Readme.md file exists", () => {
-    assert(
-        fs.existsSync("Readme.md"),
-        "Readme.md does not exist"
-    );
-});
+        serverProcess.kill();
 
-// ---------------------------------
-// TEST CASE 3
-// ---------------------------------
+    }
 
-test(3, "HTML document contains <html> tag", () => {
-    assert(
-        html.toLowerCase().includes("<html"),
-        "Missing <html> tag"
-    );
-});
-
-// ---------------------------------
-// TEST CASE 4
-// ---------------------------------
-
-test(4, "HTML document contains <head> tag", () => {
-    assert(
-        html.toLowerCase().includes("<head"),
-        "Missing <head> tag"
-    );
-});
-
-// ---------------------------------
-// TEST CASE 5
-// ---------------------------------
-
-test(5, "HTML document contains <body> tag", () => {
-    assert(
-        html.toLowerCase().includes("<body"),
-        "Missing <body> tag"
-    );
-});
-
-// ---------------------------------
-// TEST CASE 6
-// ---------------------------------
-
-test(6, "HTML document contains closing </html> tag", () => {
-    assert(
-        html.toLowerCase().includes("</html>"),
-        "Missing </html> tag"
-    );
-});
-
-// ---------------------------------
-// TEST CASE 7
-// ---------------------------------
-
-test(7, "HTML document contains <title> tag", () => {
-    assert(
-        html.toLowerCase().includes("<title>"),
-        "Missing <title> tag"
-    );
-});
-
-// ---------------------------------
-// TEST CASE 8
-// ---------------------------------
-
-test(8, "HTML document is not empty", () => {
-    assert(
-        html.trim().length > 0,
-        "index.html is empty"
-    );
-});
-
-// ---------------------------------
-// TEST CASE 9
-// ---------------------------------
-
-test(9, "Readme.md is not empty", () => {
-    assert(
-        readme.trim().length > 0,
-        "Readme.md is empty"
-    );
-});
-
-// ---------------------------------
-// TEST CASE 10
-// ---------------------------------
-
-test(10, "HTML document contains valid closing body tag", () => {
-    assert(
-        html.toLowerCase().includes("</body>"),
-        "Missing </body> tag"
-    );
-});
-
-// ---------------------------------
-// FINAL TEST SUMMARY
-// ---------------------------------
-
-console.log("\n=================================");
-console.log("           TEST SUMMARY");
-console.log("=================================");
-
-console.log(`Total Tests : 10`);
-console.log(`Tests Passed: ${passed}`);
-console.log(`Tests Failed: ${failed}`);
-
-console.log("=================================");
-
-if (failed > 0) {
-
-    console.log("❌ SOME TEST CASES FAILED!");
-    console.log("Please check the failed test cases above.");
-
-    process.exit(1);
-
-} else {
-
-    console.log("✅ ALL 10 TEST CASES PASSED!");
-
-    process.exit(0);
 }
+
+
+async function runTests() {
+
+    printLine();
+
+    console.log("REGISTRATION SYSTEM TESTING");
+
+    printLine();
+
+
+    /*
+     * Test 1
+     */
+
+    const pageResponse = await request({
+
+        hostname: "localhost",
+
+        port: PORT,
+
+        path: "/",
+
+        method: "GET"
+
+    });
+
+
+    testResult(
+        "Test 1 - Registration page loads",
+        pageResponse.statusCode === 200
+    );
+
+
+    /*
+     * Test 2
+     */
+
+    const user = {
+
+        name: "Sanskar Joshi",
+
+        email: "sanskar@example.com",
+
+        phone: "9876543210",
+
+        password: "Password123"
+
+    };
+
+
+    const registrationResponse = await request(
+
+        {
+            hostname: "localhost",
+
+            port: PORT,
+
+            path: "/register",
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            }
+
+        },
+
+        JSON.stringify(user)
+
+    );
+
+
+    let registrationData;
+
+    try {
+
+        registrationData =
+            JSON.parse(registrationResponse.body);
+
+    } catch {
+
+        registrationData = {};
+
+    }
+
+
+    testResult(
+        "Test 2 - Registration API",
+        registrationResponse.statusCode === 201
+    );
+
+
+    /*
+     * Test 3
+     */
+
+    testResult(
+        "Test 3 - Registration success response",
+        registrationData.success === true
+    );
+
+
+    /*
+     * Test 4
+     */
+
+    testResult(
+        "Test 4 - User name stored",
+        registrationData.user &&
+        registrationData.user.name === "Sanskar Joshi"
+    );
+
+
+    /*
+     * Test 5
+     */
+
+    testResult(
+        "Test 5 - Email stored",
+        registrationData.user &&
+        registrationData.user.email === "sanskar@example.com"
+    );
+
+
+    /*
+     * Test 6
+     */
+
+    testResult(
+        "Test 6 - Phone number stored",
+        registrationData.user &&
+        registrationData.user.phone === "9876543210"
+    );
+
+
+    /*
+     * Test 7
+     */
+
+    const usersResponse = await request({
+
+        hostname: "localhost",
+
+        port: PORT,
+
+        path: "/users",
+
+        method: "GET"
+
+    });
+
+
+    let usersData;
+
+    try {
+
+        usersData =
+            JSON.parse(usersResponse.body);
+
+    } catch {
+
+        usersData = {};
+
+    }
+
+
+    testResult(
+        "Test 7 - Retrieve users JSON",
+        usersResponse.statusCode === 200
+    );
+
+
+    /*
+     * Test 8
+     */
+
+    testResult(
+        "Test 8 - JSON contains users",
+        Array.isArray(usersData.users) &&
+        usersData.users.length > 0
+    );
+
+
+    /*
+     * Test 9
+     */
+
+    const storedUser =
+        usersData.users[usersData.users.length - 1];
+
+
+    testResult(
+        "Test 9 - Retrieved user name",
+        storedUser &&
+        storedUser.name === "Sanskar Joshi"
+    );
+
+
+    /*
+     * Test 10
+     */
+
+    const usersFile =
+        path.join(__dirname, "users.json");
+
+
+    testResult(
+        "Test 10 - users.json exists",
+        fs.existsSync(usersFile)
+    );
+
+
+    /*
+     * Display JSON
+     */
+
+    printLine();
+
+    console.log("RETRIEVED JSON DATA");
+
+    printLine();
+
+    console.log(
+        JSON.stringify(usersData, null, 2)
+    );
+
+
+    /*
+     * Final result
+     */
+
+    printLine();
+
+    console.log(`TOTAL TESTS : ${passed + failed}`);
+
+    console.log(`PASSED      : ${passed}`);
+
+    console.log(`FAILED      : ${failed}`);
+
+    printLine();
+
+
+    if (failed === 0) {
+
+        console.log(
+            "RESULT: ALL TEST CASES PASSED"
+        );
+
+    } else {
+
+        console.log(
+            "RESULT: SOME TEST CASES FAILED"
+        );
+
+    }
+
+
+    printLine();
+
+
+    stopServer();
+
+
+    if (failed > 0) {
+
+        process.exitCode = 1;
+
+    } else {
+
+        process.exitCode = 0;
+
+    }
+
+}
+
+
+async function main() {
+
+    try {
+
+        await startServer();
+
+        await runTests();
+
+    } catch (error) {
+
+        console.error("TEST ERROR:");
+
+        console.error(error);
+
+        stopServer();
+
+        process.exitCode = 1;
+
+    }
+
+}
+
+
+main();

@@ -1,59 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Clickjacking Detection System</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f4f4f4;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 700px;
-            margin: auto;
-        }
-
-        .status {
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-            background-color: #e8f5e9;
-            color: green;
-        }
-    </style>
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
     <div class="container">
+        <h2>Registration Form</h2>
 
-        <h1>Clickjacking Detection System</h1>
+        <form id="registrationForm">
 
-        <p>
-            This project is used to demonstrate basic
-            clickjacking attack detection.
-        </p>
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Enter your name">
 
-        <div class="status">
-            <strong>Status:</strong> Website Secure
-        </div>
+            <label>Email</label>
+            <input type="email" id="email" placeholder="Enter your email">
 
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter password">
+
+            <label>Phone Number</label>
+            <input type="text" id="phone" placeholder="Enter phone number">
+
+            <label>Gender</label>
+            <select id="gender">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <button type="submit">Register</button>
+
+            <p id="message"></p>
+
+        </form>
     </div>
 
+    <script src="registartion.js"></script>
 </body>
-
 </html>

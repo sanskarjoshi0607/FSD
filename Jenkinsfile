@@ -3,49 +3,59 @@ pipeline {
 
     stages {
 
-        stage('Environment Check') {
+        stage('Checkout') {
             steps {
-                echo '================================='
-                echo 'Checking Node.js installation...'
-                echo '================================='
+                checkout scm
+            }
+        }
 
+        stage('Verify Files') {
+            steps {
                 bat '''
-                    echo Checking Node.js...
-                    "C:\\Program Files\\nodejs\\node.exe" -v
-
-                    echo.
-                    echo Checking npm...
-                    "C:\\Program Files\\nodejs\\npm.cmd" -v
+                    if not exist registration.html exit /b 1
+                    if not exist style.css exit /b 1
+                    if not exist registration.js exit /b 1
+                    if not exist server.js exit /b 1
+                    if not exist test.js exit /b 1
+                    if not exist users.json exit /b 1
+                    if not exist Dockerfile exit /b 1
                 '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                echo '================================='
-                echo 'Running Test Cases...'
-                echo '================================='
+                bat 'node test.js'
+            }
+        }
 
+        stage('Docker Build') {
+            steps {
+                bat 'docker build -t registration-app .'
+            }
+        }
+
+        stage('Stop Old Container') {
+            steps {
                 bat '''
-                    "C:\\Program Files\\nodejs\\node.exe" test.js
+                    docker rm -f registration-container 2>NUL
+                    exit /b 0
                 '''
             }
         }
-    }
 
-    post {
-        always {
-            echo '================================='
-            echo 'Jenkins Build Completed'
-            echo '================================='
+        stage('Docker Run') {
+            steps {
+                bat '''
+                    docker run -d -p 3000:3000 --name registration-container registration-app
+                '''
+            }
         }
 
-        success {
-            echo 'All test cases passed successfully!'
-        }
-
-        failure {
-            echo 'Build failed. Please check the Console Output.'
+        stage('Docker Verify') {
+            steps {
+                bat 'docker ps'
+            }
         }
     }
 }
